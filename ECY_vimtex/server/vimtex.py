@@ -10,7 +10,7 @@ class Operate(scope_.Source_interface):
     def __init__(self):
         # must same as the same defined in Client side.
         self._name = 'latex'
-        self._started_taxlab = 'not started'
+        self._taxlab_status = 'not started'
         self._did_open_list = {}
         self._deamon_queue = None
 
@@ -46,9 +46,9 @@ class Operate(scope_.Source_interface):
         self._lsp.StartJob(server_path)
         init_msg = self._lsp.initialize()
         try:
-            self._lsp.GetResponse(init_msg['Method'])
-            self._lsp.initialized()
+            server_info = self._lsp.GetResponse(init_msg['Method'])
             self._taxlab_status = 'started'
+            g_logger.debug(server_info)
         except:
             self._build_erro_msg(2, 'Failed to start Taxlab server')
 
@@ -68,6 +68,8 @@ class Operate(scope_.Source_interface):
         candidates = version['Candidates']
         for item in candidates:
             item['abbr'] = item['word']
+            if item['kind'].find('cmd') != -1:
+                item['snippet'] = item['word'] + '\{${0}\}'
         return_['Lists'] = candidates
         return return_
 
@@ -92,6 +94,7 @@ class Operate(scope_.Source_interface):
         # }}}
 
     def DoCompletion(self, version):
+        g_logger.debug(version['UseTablab'])
         if not version['UseTablab']:
             return self._return_vimtex(version)
         if not self._check(version):

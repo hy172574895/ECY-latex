@@ -55,7 +55,7 @@ endf
 
 fun! s:Init()
   try
-    call vimtex#complete#omnifunc(0,'')
+    call vimtex#complete#omnifunc(1,'')
     let g:use_vimtex = get(g:,'use_vimtex', v:true)
   catch 
     let g:use_vimtex = v:false
