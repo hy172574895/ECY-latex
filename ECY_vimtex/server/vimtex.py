@@ -15,7 +15,7 @@ class Operate(scope_.Source_interface):
         self._deamon_queue = None
 
     def GetInfo(self):
-        return {'Name': self._name, 'WhiteList': ['tex'],
+        return {'Name': self._name, 'WhiteList': ['tex', 'plaintex'],
                 'Regex': r'[\w]', 'TriggerKey': ['\\']}
 
     def OnBufferEnter(self, version):
@@ -27,7 +27,7 @@ class Operate(scope_.Source_interface):
 
     def _check(self, version):
         self._deamon_queue = version['DeamonQueue']
-        if version['UseTablab']:
+        if version['UseTexLab'] or not version['UseVimtexCompletion']:
             if self._taxlab_status == 'not started':
                 self._taxlab_status = 'tried'
                 self._lsp = lsp.LSP()
@@ -83,7 +83,7 @@ class Operate(scope_.Source_interface):
         text = version['AllTextList']
         # LSP require the edit-version
         if uri not in self._did_open_list:
-            return_id = self._lsp.didopen(uri, 'html', text, version=0)
+            return_id = self._lsp.didopen(uri, 'latex', text, version=0)
             self._did_open_list[uri] = {}
             self._did_open_list[uri]['change_version'] = 0
         else:
@@ -94,8 +94,8 @@ class Operate(scope_.Source_interface):
         # }}}
 
     def DoCompletion(self, version):
-        g_logger.debug(version['UseTablab'])
-        if not version['UseTablab']:
+        g_logger.debug(version['UseVimtexCompletion'])
+        if version['UseVimtexCompletion']:
             return self._return_vimtex(version)
         if not self._check(version):
             return None

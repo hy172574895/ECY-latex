@@ -7,22 +7,32 @@ import lib.vim_or_neovim_support as vim_lib
 class Operate(scope_.Event):
     def __init__(self, source_name):
         scope_.Event.__init__(self, source_name)
-        self._use_vimtex = None
-        self.taxlab_path = None
+
+        self._vimtex_complete_enabled = None
+        self._taxlab_path = None
+        self._use_taxlab = None
+
         self._vimtex_candidates = []
         self._position_cookies = {}
 
-    def _using_taxlab(self):
-        if self._use_vimtex is None:
-            self._use_vimtex = vim_lib.GetVariableValue('g:use_vimtex')
-        return not self._use_vimtex
+    def vimtex_complete_enabled(self):
+        if self._vimtex_complete_enabled is None:
+            self._vimtex_complete_enabled = vim_lib.GetVariableValue('g:vimtex_complete_enabled')
+        return self._vimtex_complete_enabled
 
-    def _get_taxlab_path(self):
-        if self.taxlab_path is None:
-            self.taxlab_path = vim_lib.GetVariableValue('g:ECY_vimtex_texlab_path')
-        return self.taxlab_path
+    def ECY_vimtex_texlab_path(self):
+        if self._taxlab_path is None:
+            self._taxlab_path = vim_lib.GetVariableValue('g:ECY_vimtex_texlab_path')
+        return self._taxlab_path
+
+    def ECY_use_taxlab(self):
+        if self._use_taxlab is None:
+            self._use_taxlab = vim_lib.GetVariableValue('g:ECY_use_taxlab')
+        return self._use_taxlab
 
     def _get_vimtex_candiates(self):
+        if not self.vimtex_complete_enabled():
+            return []
         try:
             current_colum = vim_lib.CurrentColumn()
             current_line_text = vim_lib.CurrentLineContents()
@@ -40,23 +50,9 @@ class Operate(scope_.Event):
             self._vimtex_candidates = []
         return self._vimtex_candidates
 
-    def OnBufferEnter(self):
-        msg = {}
-        msg['UseTablab'] = self._using_taxlab()
-        if self._using_taxlab():
-            msg['TexlabCMD'] = self._get_taxlab_path()
-        return self._pack(msg, 'OnBufferEnter')
-
     def DoCompletion(self):
         msg = {}
-        msg['TriggerLength'] = self._trigger_len
-        msg['ReturnMatchPoint'] = self._is_return_match_point
-
-        msg['UseTablab'] = self._using_taxlab()
-        if self._using_taxlab():
-            msg['TexlabCMD'] = self._get_taxlab_path()
-        else:
-            msg['Candidates'] = self._get_vimtex_candiates()
+        msg['Candidates'] = self._get_vimtex_candiates()
         return self._pack(msg, 'DoCompletion')
 
     def FindStart(self, text, reg):
@@ -85,3 +81,9 @@ class Operate(scope_.Event):
                 last_key = text[0]
         return start_position, match_words, last_key
 # }}}
+
+    def _pack(self, msg, event_name):
+        msg['UseTexLab'] = self.ECY_use_taxlab()
+        msg['TexlabCMD'] = self.ECY_vimtex_texlab_path()
+        msg['UseVimtexCompletion'] = self.vimtex_complete_enabled()
+        return self._generate(msg, event_name)
