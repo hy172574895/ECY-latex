@@ -86,4 +86,5 @@ class Operate(scope_.Event):
         msg['UseTexLab'] = self.ECY_use_taxlab()
         msg['TexlabCMD'] = self.ECY_vimtex_texlab_path()
         msg['UseVimtexCompletion'] = self.vimtex_complete_enabled()
+        msg['Additional'] = self._get_snippets()
         return self._generate(msg, event_name)

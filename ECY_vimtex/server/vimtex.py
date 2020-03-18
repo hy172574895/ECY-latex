@@ -70,6 +70,19 @@ class Operate(scope_.Source_interface):
             item['abbr'] = item['word']
             if item['kind'].find('cmd') != -1:
                 item['snippet'] = item['word'] + '\{${0}\}'
+        if version['Additional']['HasSnippetSupport']:
+            snippets = version['Additional']['UltisnipsSnippets'].items()
+            for trigger, snippet in snippets:
+                results_format = {'abbr': '', 'word': '', 'kind': '',
+                        'menu': '', 'info': '', 'user_data':''}
+                results_format['word'] = trigger
+                results_format['abbr'] = trigger
+                results_format['kind'] = '[Snippet]'
+                description = snippet['description']
+                if not snippet['description'] == '':
+                    results_format['menu'] = description
+                results_format['info'] = snippet['preview']
+                candidates.append(results_format)
         return_['Lists'] = candidates
         return return_
 
@@ -99,4 +112,5 @@ class Operate(scope_.Source_interface):
             return self._return_vimtex(version)
         if not self._check(version):
             return None
+        # TODO
         return_ = {'ID': version['VersionID']}
