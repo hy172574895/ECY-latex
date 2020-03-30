@@ -57,7 +57,7 @@ fun! s:Init()
   catch 
     let g:has_vimtex = v:false
   endtry
-  let g:vimtex_complete_enabled = get(g:,'vimtex_complete_enabled', v:true) " default to use texlab completion
+  let g:vimtex_complete_enabled = get(g:,'vimtex_complete_enabled', v:true) " default to use vimtex completion
   let g:ECY_use_taxlab = get(g:,'ECY_use_taxlab', v:true) " if user have
   let g:ECY_vimtex_texlab_path = get(g:,'ECY_vimtex_texlab_path', 'texlab')
 "}}}

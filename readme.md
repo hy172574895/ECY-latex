@@ -1,6 +1,7 @@
 # Installation, this a plugin of ECY.
 Required
 > Plug 'hy172574895/EasyCompleteYou'
+> Plug 'lervag/vimtex'
 
 and this repo
 > Plug 'hy172574895/ECY-latex'
@@ -10,6 +11,9 @@ and then
 ```
 :ECYInstall latex
 ```
+
+# Usages
+Check [vimtex](https://github.com/lervag/vimtex).
 
 # License
     DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
